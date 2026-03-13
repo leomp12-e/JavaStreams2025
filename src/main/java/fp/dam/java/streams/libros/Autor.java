@@ -1,6 +1,9 @@
 package fp.dam.java.streams.libros;
 
-public class Autor {
+import java.util.Comparator;
+import java.util.Objects;
+
+public class Autor implements Comparable<Autor> {
 
 	private String nombre;
 	private String apellidos;
@@ -34,4 +37,32 @@ public class Autor {
 		return getApellidosNombre();
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(apellidos, nombre);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Autor other = (Autor) obj;
+		return Objects.equals(apellidos, other.apellidos) && Objects.equals(nombre, other.nombre);
+	}
+
+	private static Comparator<Autor> c = Comparator.comparing(Autor::getApellidos).thenComparing(Autor::getNombre);
+	@Override
+	public int compareTo(Autor o) {
+//		int resultado = apellidos.compareTo(o.apellidos);
+//		if (resultado == 0)
+//			resultado = nombre.compareTo(o.nombre);
+//		return resultado;
+		return c.compare(this, o);
+	}
+
+		
 }

@@ -5,8 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.function.Function;
+import static java.util.stream.Collectors.*;
 import java.util.stream.Stream;
+import static java.util.function.Function.*;
 
 public class BloqueA {
 	
@@ -28,10 +32,39 @@ public class BloqueA {
 	 * agrupar las palabras de longitud mayor que 3 que comiencen por los mismos 3 caracteres.
 	 */
 	
-	public Map<String, Set<String>> ejercicio02(Stream<String> secuencia) {
-		
-		return null;
+	public static Map<String, List<String>> ejercicio02a(Stream<String> secuencia) {
+		return secuencia
+				.filter(s -> s.length() > 3)
+				.collect(groupingBy(s -> s.substring(0, 3)));
 	}
+	
+	public static Map<String, List<String>> ejercicio02b(Stream<String> secuencia) {
+		return secuencia
+				.filter(s -> s.length() > 3)
+				.collect(groupingBy(
+						s -> s.substring(0, 3),
+						TreeMap::new,
+						mapping(identity(), toList())));
+	}
+	
+	public static Map<String, Set<String>> ejercicio02c(Stream<String> secuencia) {
+		return secuencia
+				.filter(s -> s.length() > 3)
+				.collect(groupingBy(
+						s -> s.substring(0, 3),
+						TreeMap::new,
+						mapping(identity(), toCollection(TreeSet::new))));
+	}
+	
+	public static Map<String, Long> ejercicio02d(Stream<String> secuencia) {
+		return secuencia
+				.filter(s -> s.length() > 3)
+				.collect(groupingBy(
+						s -> s.substring(0, 3),
+						TreeMap::new,
+						mapping(Function.identity(), counting())));
+	}
+	
 	
 	
 	/*
@@ -60,7 +93,9 @@ public class BloqueA {
 	 * las letras de la 'a' a la 'z' (minúsculas). Las vocales con tilde se considerarán como vocales sin tilde.
 	 */ 
 
-	
+	static Map<Character, Long> ejercicio04(Stream<String> secuencia) {
+		return secuencia.collect(groupingBy(s -> s.toLowerCase().charAt(0), counting()));
+	}
 	
 	/*
 	 * Crea un método estático que acepte una secuencia de palabras y retorne la longitud de la palabra o palabras
@@ -87,14 +122,18 @@ public class BloqueA {
 		return secuencia
 				.sorted(Comparator.comparingInt(String::length).reversed())
 				.limit(20)
-				.collect(Collectors.toCollection(LinkedList::new));
+				.collect(toCollection(LinkedList::new));
 	}
 	
 	
 	
 	public static void main(String[] args) {
 //		ejercicio01(Datos.getPalabras());
+//		ejercicio02b(Datos.getPalabras()).entrySet()
+//				.forEach(e -> System.out.println(e.getKey() + ": " + e.getValue()));
+		ejercicio04(Datos.getPalabras()).entrySet()
+				.forEach(e -> System.out.println(e.getKey() + ": " + e.getValue()));
 //		ejercicio03(Datos.getPalabras(), 5);
-		System.out.println(ejercicio07(Datos.getPalabras()));
+//		System.out.println(ejercicio07(Datos.getPalabras()));
 	}
 }
