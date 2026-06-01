@@ -2,17 +2,24 @@ package fp.dam.java.streams;
 
 import static java.util.stream.Collectors.averagingInt;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
 import java.util.Set;
+import static java.util.function.Function.*;
 import java.util.regex.Pattern;
+import static java.util.stream.Collectors.*;
 import java.util.stream.Stream;
 
 
 public class BloqueB {
 	
 	private static Pattern pattern = Pattern.compile("\\p{L}+|\\P{L}+");
+	private static Pattern pattern2 = Pattern.compile("\\p{L}+");
 	
 	/*
 	 * EJERCICIO 1
@@ -26,9 +33,17 @@ public class BloqueB {
 	 */
 	
 	static List<List<String>> ejercicio01(Stream<String> secuencia) {
+//		return secuencia
+//				.map(s -> pattern.matcher(s).results().map(r -> r.group()).toList())
+//				.toList();
+		
 		return secuencia
-				.map(s -> pattern.matcher(s).results().map(r -> r.group()).toList())
-				.toList();
+				.map(s -> pattern
+						.matcher(s)
+						.results()
+						.map(r -> r.group())
+						.collect(toCollection(ArrayList::new)))
+				.collect(toCollection(LinkedList::new));
 	}
 	
 	/*
@@ -91,7 +106,14 @@ public class BloqueB {
 	 */
 	
 	static Set<String> ejercicio06(Stream<String> secuencia) {
-		return null;
+		return secuencia
+				.flatMap(s -> pattern2.matcher(s).results().map(r -> r.group()))
+				.collect(groupingBy(identity(), counting()))
+				.entrySet()
+				.stream()
+				.filter(e -> e.getValue() > 1)
+				.map(e -> e.getKey())
+				.collect(toSet());
 	}
 	
 	
@@ -101,8 +123,9 @@ public class BloqueB {
 	 * Crea un método estático que acepte una secuencia de cadenas y retorne la longitud media.
 	 */
 	
-	static double ejercicio07(Stream<String> secuencia) {
-		return secuencia.collect(averagingInt(String::length));
+	static Collection<String> ejercicio07(Stream<String> secuencia) {
+		return secuencia.sorted(Comparator.comparingInt(String::length).reversed())
+		.limit(20).collect(toCollection(LinkedList::new));
 	}
 	
 	/*
@@ -124,9 +147,10 @@ public class BloqueB {
 	 * en la secuencia sin contar las repetidas.
 	 */
 	
-	static long ejercicio09(Stream<String> secuencia) {
-		return 0;
-	}
+	public static List<String> ejercicio09(Stream<String> secuencia, int longitud) {
+		List<String> palabras = secuencia.toList();
+		return palabras.stream().filter(s -> palabras.stream().anyMatch(null)).toList();
+				}
 	
 	
 	/*
